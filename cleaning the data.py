@@ -1,6 +1,11 @@
 # importing the necessary libraries
 import pandas as pd
 import re
+import nltk
+from nltk.stem import WordNetLemmatizer
+nltk.download('wordnet')
+
+
 
 # reading the file
 data = pd.read_csv("labeled_data.csv")
@@ -14,18 +19,18 @@ del data["Unnamed: 0"]
 #cleaning the text
 tweet = data["tweet"]
 clean_tweet = []
-remove = ["#","&",'"',";","!",":","/","http","~"]
 
 # replacing the words
-for i in tweet:
-    line = i[:i.find("/")]
-    for g in remove:
-        line = re.sub(g," ",line)
-    line = re.sub("RT","",line)
-    clean_tweet.append(line)
+for index, row in data.iterrows():
+    line = str(row['tweet']).lower()
+    clean_tweet.append(' '.join(re.sub("(@[A-Za-z0-9]+)|([^0-9A-Za-z \t])|(\w+:\/\/\S+)|(rt)"," ",line).split()))
 
 # adding it to the dataframe
 data["clean_tweet"] = clean_tweet
+
+#Lemmitization
+lemmatizer = WordNetLemmatizer()
+data["clean_tweet"] = data["clean_tweet"].apply(lambda x : ' '.join([lemmatizer.lemmatize(word) for word in x.split()]))
 
 # convert into a new csv
 data.to_csv("clean_tweets.csv", index=False)
