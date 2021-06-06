@@ -15,6 +15,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
 # reading the file
 data =pd.read_csv("clean_tweets.csv")
+print(data.head(10).to_string())
 
 # descriptive statistics
 print(data.info())
@@ -41,27 +42,27 @@ plt.show()
 
 # plotting the key bad word
 hate_words = ' '.join([word for word in data['clean_tweet'][data['class'] == 0]])
-wordcloud = WordCloud(max_font_size = 110,max_words = 500,background_color="black",colormap="Reds").generate(hate_words)
+wordcloud = WordCloud(max_font_size = 110,max_words = 100,background_color="black",colormap="Reds").generate(hate_words)
 plt.axis('off')
 plt.imshow(wordcloud, interpolation = 'bilinear',cmap='viridis')
 plt.show()
 
 # plotting hate speech
-off_words = ' '.join([word for word in data['clean_tweet'][data['class'] == 1]])
-wordcloud = WordCloud(max_font_size = 110,max_words = 500,background_color="black",colormap="Reds").generate(off_words)
+off_words = ' '.join([str(word) for word in data['clean_tweet'][data['class'] == 1]])
+wordcloud = WordCloud(max_font_size = 110,max_words = 100,background_color="black",colormap="Reds").generate(off_words)
 plt.axis('off')
 plt.imshow(wordcloud, interpolation = 'bilinear',cmap='viridis')
 plt.show()
 
 # plotting offensive speech
-normal_words = ' '.join([word for word in data['clean_tweet'][data['class'] == 2]])
-wordcloud = WordCloud(max_font_size = 110,max_words = 500, background_color="black",colormap="Reds").generate(normal_words)
+normal_words = ' '.join([str(word) for word in data['clean_tweet'][data['class'] == 2]])
+wordcloud = WordCloud(max_font_size = 110,max_words = 100, background_color="black",colormap="Reds").generate(normal_words)
 plt.axis('off')
 plt.imshow(wordcloud, interpolation = 'bilinear',cmap='viridis')
 plt.show()
 
 # plotting the frequency for the most used words in the sentences
-text = ' '.join([word for word in data['clean_tweet']])
+text = ' '.join([str(word) for word in data['clean_tweet']])
 tokenized_word=word_tokenize(text)
 stop_words=set(stopwords.words("english"))
 
@@ -83,7 +84,7 @@ modified_data = data
 # measuring the length 
 lenght = []
 for w in modified_data["clean_tweet"]:
-    oo = len(w)
+    oo = len(str(w))
     lenght.append(oo)
 modified_data["length"] = lenght
 #  changing the format of class variable
@@ -102,7 +103,7 @@ data["class"]=data['class'].map({'hate':0,'offensive':1,'neither':2})
 # sentiment score
 senti_data = data
 sid = SentimentIntensityAnalyzer()
-senti_data['scores'] = senti_data['clean_tweet'].apply(lambda clean_tweet: sid.polarity_scores(clean_tweet))
+senti_data['scores'] = senti_data['clean_tweet'].apply(lambda clean_tweet: sid.polarity_scores(str(clean_tweet)))
 senti_data['Sentiment_Score'] = senti_data['scores'].apply(lambda score_dict: score_dict['compound'])
 senti_data['class'] = senti_data['class'].map({0:'hate',1:'offensive',2:'neither'})
 ax = sns.violinplot(x="class", y="Sentiment_Score", data=senti_data,palette="flare",inner="quartile")
