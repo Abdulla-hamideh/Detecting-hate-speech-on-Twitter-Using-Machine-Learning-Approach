@@ -97,16 +97,15 @@ graph = sns.FacetGrid(data=modified_data, col='class')
 graph.map(plt.hist, 'length', bins=50)
 plt.show()
 
-
-data["class"]=data['class'].map({'hate':0,'offensive':1,'neither':2})
-
 # sentiment score
-senti_data = data
 sid = SentimentIntensityAnalyzer()
-senti_data['scores'] = senti_data['clean_tweet'].apply(lambda clean_tweet: sid.polarity_scores(str(clean_tweet)))
-senti_data['Sentiment_Score'] = senti_data['scores'].apply(lambda score_dict: score_dict['compound'])
-senti_data['class'] = senti_data['class'].map({0:'hate',1:'offensive',2:'neither'})
-ax = sns.violinplot(x="class", y="Sentiment_Score", data=senti_data,palette="flare",inner="quartile")
+modified_data['scores'] = modified_data['clean_tweet'].apply(lambda clean_tweet: sid.polarity_scores(str(clean_tweet)))
+modified_data['Sentiment_Score'] = modified_data['scores'].apply(lambda score_dict: score_dict['compound'])
+ax = sns.violinplot(x="class", y="Sentiment_Score", data=modified_data,palette="flare",inner="quartile")
 plt.show()
 
+# returning the actual labels for the original names
+data["class"]=data['class'].map({'hate':0,'offensive':1,'neither':2})
 
+# convert modified data into a new csv for modelling
+modified_data.to_csv("ready_dataset.csv", index=False)
